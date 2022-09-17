@@ -16,7 +16,8 @@ config :phoenix_live_draw, PhoenixLiveDrawWeb.Endpoint,
   secret_key_base: "c7NS1hsRs17TcY7gPEI2rlOlYRZh0VYD5bwOSuf57IgMcb1BalLWPft1qUb5JCm9",
   watchers: [
     # Start the esbuild watcher by calling Esbuild.install_and_run(:default, args)
-    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]}
+    esbuild: {Esbuild, :install_and_run, [:default, ~w(--sourcemap=inline --watch)]},
+    tailwind: {Tailwind, :install_and_run, [:default, ~w(--watch)]}
   ]
 
 # ## SSL Support
