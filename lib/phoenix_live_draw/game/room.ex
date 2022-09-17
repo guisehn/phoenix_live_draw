@@ -1,12 +1,12 @@
 defmodule PhoenixLiveDraw.Game.Room do
-  alias PhoenixLiveDraw.Game.Player
+  alias PhoenixLiveDraw.Game.{Player, State}
 
   defstruct [:id, :players, :round_player, :state]
 
   @type t :: %__MODULE__{
           id: id(),
           players: %{Player.id() => Player.t()},
-          state: state,
+          state: state(),
 
           # Who is drawing now
           round_player: Player.t() | nil
@@ -14,6 +14,5 @@ defmodule PhoenixLiveDraw.Game.Room do
 
   @type id :: String.t()
 
-  # TODO: define the actual states once we have them
-  @type state :: any
+  @type state :: State.Stopped.t() | State.Drawing.t() | State.PostRound.t()
 end
