@@ -1,0 +1,2 @@
+defmodule PhoenixLiveDrawWeb.RoomLive.PlayersComponent do
+end
