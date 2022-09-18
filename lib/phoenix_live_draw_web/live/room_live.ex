@@ -2,7 +2,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
   use PhoenixLiveDrawWeb, :live_view
 
   alias PhoenixLiveDraw.Game.{Player, Room}
-  alias __MODULE__.PlayersComponent
+  alias __MODULE__.{MessagesComponent, PlayersComponent}
 
   def mount(%{"id" => room_id}, _session, socket) do
     players = %{
@@ -12,9 +12,16 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
       "4" => Player.new("4", "Adam")
     }
 
+    user_id = "1"
+
     room = %{Room.new(room_id) | players: players}
 
-    {:ok, assign(socket, :room, room)}
+    socket =
+      socket
+      |> assign(:room, room)
+      |> assign(:user_id, user_id)
+
+    {:ok, socket}
   end
 
   def render(assigns) do
@@ -26,7 +33,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
         </div>
 
         <div class="h-[170px] bg-white rounded shadow-md shrink-0 rounded-bl-3xl">
-          messages
+          <MessagesComponent.render room={@room} user_id={@user_id} />
         </div>
       </div>
 
