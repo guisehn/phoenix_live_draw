@@ -12,14 +12,12 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
       "4" => Player.new("4", "Adam")
     }
 
-    user_id = "1"
-
     room = %{Room.new(room_id) | players: players}
 
     socket =
       socket
       |> assign(:room, room)
-      |> assign(:user_id, user_id)
+      |> assign(:player_id, "1")
 
     {:ok, socket}
   end
@@ -28,12 +26,12 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
     ~H"""
     <div class="w-[900px] h-[572px] m-auto flex flex-row gap-3">
       <div class="w-[660px] flex flex-col gap-3 shrink-0">
-        <div class="h-[390px] bg-white rounded rounded-tl-3xl shadow-md shrink-0">
-          stage
+        <div class="h-[390px] bg-white rounded rounded-tl-3xl shadow-md shrink-0 flex flex-col items-center justify-center text-center">
+          TODO: drawing stage
         </div>
 
         <div class="h-[170px] bg-white rounded shadow-md shrink-0 rounded-bl-3xl">
-          <MessagesComponent.render room={@room} user_id={@user_id} />
+          <MessagesComponent.render room={@room} player_id={@player_id} />
         </div>
       </div>
 

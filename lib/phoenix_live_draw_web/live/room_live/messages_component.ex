@@ -57,7 +57,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive.MessagesComponent do
     """
   end
 
-  defp my_round?(%{room: room, user_id: user_id}) do
-    room.round_player && room.round_player.id == user_id
+  defp my_round?(%{room: room, player_id: player_id}) do
+    room.round_player && room.round_player.id == player_id
   end
 end
