@@ -15,4 +15,13 @@ defmodule PhoenixLiveDraw.Game.Room do
   @type id :: String.t()
 
   @type state :: State.Stopped.t() | State.Drawing.t() | State.PostRound.t()
+
+  def new(id) do
+    %__MODULE__{
+      id: id,
+      players: %{},
+      state: %State.Stopped{},
+      round_player: nil
+    }
+  end
 end
