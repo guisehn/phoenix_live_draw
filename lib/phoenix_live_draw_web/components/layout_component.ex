@@ -15,7 +15,7 @@ defmodule PhoenixLiveDrawWeb.LayoutComponent do
 
   def button(assigns) do
     class = [
-      "font-bold py-2 px-4 rounded bg-indigo-500 text-white transition hover:bg-indigo-600 active:bg-indigo-800",
+      "font-bold py-2 px-4 rounded-full bg-indigo-500 text-white transition hover:bg-indigo-600 active:bg-indigo-800",
       assigns[:class]
     ]
 
