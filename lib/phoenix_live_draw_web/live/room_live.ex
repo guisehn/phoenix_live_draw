@@ -6,6 +6,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
   alias __MODULE__.{
     MessagesComponent,
     PlayersComponent,
+    SimulatorComponent,
     StageComponent
   }
 
@@ -17,7 +18,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
       "4" => Player.new("4", "Adam")
     }
 
-    room = %{Room.new(room_id) | players: players}
+    room = %{Room.new(room_id) | players: players, round_player: players["1"]}
 
     socket =
       socket
@@ -45,9 +46,19 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
       </div>
     </div>
 
+    <.live_component id="simulator" module={SimulatorComponent} room={@room} player_id={@player_id} />
+
     <div class="mt-10 w-1/2 m-auto text-sm">
       <code><pre><%= inspect(@room, pretty: true) %></pre></code>
     </div>
     """
+  end
+
+  def handle_info({:update_room, room}, socket) do
+    {:noreply, assign(socket, :room, room)}
+  end
+
+  def handle_info({:update_player, player_id}, socket) do
+    {:noreply, assign(socket, :player_id, player_id)}
   end
 end
