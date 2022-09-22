@@ -1,7 +1,7 @@
 defmodule PhoenixLiveDrawWeb.RoomLive.MessagesComponent do
   alias PhoenixLiveDraw.Game.{PlayerMessage, SystemMessage}
 
-  use Phoenix.Component
+  use PhoenixLiveDrawWeb, :component
 
   def render(assigns) do
     messages = [

@@ -98,6 +98,8 @@ defmodule PhoenixLiveDrawWeb do
       import PhoenixLiveDrawWeb.ErrorHelpers
       import PhoenixLiveDrawWeb.Gettext
       alias PhoenixLiveDrawWeb.Router.Helpers, as: Routes
+
+      import PhoenixLiveDrawWeb.LayoutComponent
     end
   end
 

@@ -1,5 +1,5 @@
 defmodule PhoenixLiveDrawWeb.RoomLive.PlayersComponent do
-  use Phoenix.Component
+  use PhoenixLiveDrawWeb, :component
 
   def list(assigns) do
     ~H"""
