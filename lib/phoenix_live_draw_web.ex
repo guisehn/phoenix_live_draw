@@ -100,6 +100,7 @@ defmodule PhoenixLiveDrawWeb do
       alias PhoenixLiveDrawWeb.Router.Helpers, as: Routes
 
       import PhoenixLiveDrawWeb.LayoutComponent
+      import PhoenixLiveDrawWeb.IconComponent
     end
   end
 

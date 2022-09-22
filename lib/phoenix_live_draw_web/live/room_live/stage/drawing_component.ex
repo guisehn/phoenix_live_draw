@@ -7,7 +7,9 @@ defmodule PhoenixLiveDrawWeb.RoomLive.Stage.DrawingComponent do
     ~H"""
     <main>
       <%= if drawing?(assigns) do %>
-        the word is: <%= @room.state.word %>
+        <div class="bg-indigo-700 drop-shadow text-white font-bold rounded absolute left-1/2 top-0 -translate-x-1/2 -mt-4 p-2 px-4">
+          <%= @room.state.word %>
+        </div>
       <% end %>
     </main>
     """
