@@ -3,6 +3,8 @@ defmodule PhoenixLiveDrawWeb.RoomLive.Stage.DrawingComponent do
 
   alias PhoenixLiveDraw.Game.Room
 
+  import PhoenixLiveDrawWeb.CountdownComponent
+
   def render(assigns) do
     ~H"""
     <main>
@@ -11,6 +13,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive.Stage.DrawingComponent do
           <%= @room.state.word %>
         </div>
       <% end %>
+      <.bottom_countdown id="drawing_countdown" until={@room.state.expires_at} />
     </main>
     """
   end
