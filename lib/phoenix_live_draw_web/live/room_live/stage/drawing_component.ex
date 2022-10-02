@@ -1,13 +1,14 @@
 defmodule PhoenixLiveDrawWeb.RoomLive.Stage.DrawingComponent do
   use PhoenixLiveDrawWeb, :live_component
 
-  alias PhoenixLiveDraw.Game.Room
+  alias PhoenixLiveDraw.Game.{Room, PubSub}
 
   import PhoenixLiveDrawWeb.CountdownComponent
 
+  @impl true
   def render(assigns) do
     ~H"""
-    <main class="w-full h-full">
+    <main id="drawing_component" class="w-full h-full">
       <%= if drawing?(@player_id, @room) do %>
         <.word_box room={@room} />
       <% end %>
@@ -17,9 +18,15 @@ defmodule PhoenixLiveDrawWeb.RoomLive.Stage.DrawingComponent do
     """
   end
 
+  @impl true
+  def handle_event("draw", drawing_path, socket) do
+    PubSub.room_broadcast(socket.assigns.room.id, {:draw, drawing_path})
+    {:noreply, socket}
+  end
+
   defp word_box(assigns) do
     ~H"""
-    <div class="bg-indigo-700 drop-shadow text-white font-bold rounded absolute left-1/2 top-0 -translate-x-1/2 -mt-4 p-2 px-4 z-10 select-none">
+    <div class="bg-indigo-700 drop-shadow text-white font-bold rounded absolute left-1/2 top-0 -translate-x-1/2 -mt-4 p-2 px-4 z-10">
       <%= @room.state.word %>
     </div>
     """

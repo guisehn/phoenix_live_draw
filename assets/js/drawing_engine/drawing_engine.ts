@@ -16,7 +16,7 @@ class DrawingEngine {
   private mode: Mode;
   private frontCanvas: HTMLCanvasElement;
   private backCanvas: HTMLCanvasElement;
-  private drawCallback: (object: Coordinates[]) => void;
+  private drawCallback: (path: Coordinates[]) => void;
 
   private isDrawing: boolean = false;
   private drawingPath: Coordinates[] = [];
@@ -55,13 +55,12 @@ class DrawingEngine {
 
   private drawingStarted(event: DrawEvent) {
     this.isDrawing = true;
-    console.log("COORDS", event.coordinates);
     this.drawingPath = [event.coordinates];
 
     this.clearCanvas(this.frontCanvas);
     this.drawOn(this.frontCanvas, this.drawingPath);
 
-    console.log("started");
+    document.body.style.userSelect = "none";
   }
 
   private cursorMoved(event: DrawEvent) {
@@ -84,6 +83,8 @@ class DrawingEngine {
 
     this.drawCallback(this.drawingPath);
     this.drawingPath = [];
+
+    document.body.style.userSelect = "auto";
   }
 
   private clearCanvas(canvas: HTMLCanvasElement) {
@@ -97,8 +98,6 @@ class DrawingEngine {
     ctx.beginPath();
     ctx.lineWidth = 2;
     ctx.strokeStyle = "black";
-
-    console.log({ drawingPath });
 
     const [first, ...rest] = drawingPath;
 
