@@ -4,23 +4,20 @@ defmodule PhoenixLiveDrawWeb.RoomLive.StageComponent do
   alias PhoenixLiveDraw.Game.State
   alias PhoenixLiveDrawWeb.RoomLive.Stage
 
-  def render(%{room: room} = assigns) do
-    component =
-      case room.state do
-        %State.Stopped{} -> Stage.StoppedComponent
-        %State.Drawing{} -> Stage.DrawingComponent
-        %State.PostRound{} -> Stage.PostRoundComponent
-      end
-
+  def render(assigns) do
     ~H"""
     <div class="flex flex-col h-full relative items-center justify-center text-center">
       <.live_component
-        module={component}
+        module={component_from_state(@room.state)}
         room={@room}
         player_id={@player_id}
-        id={"stage_#{component}"}
+        id={"stage_#{component_from_state(@room.state)}"}
       />
     </div>
     """
   end
+
+  defp component_from_state(%State.Stopped{}), do: Stage.StoppedComponent
+  defp component_from_state(%State.Drawing{}), do: Stage.DrawingComponent
+  defp component_from_state(%State.PostRound{}), do: Stage.PostRoundComponent
 end
