@@ -43,7 +43,7 @@ class DrawingCanvas extends Hook {
   }
 
   private currentUserDrew(path: Coordinates[]) {
-    this.pushEventTo("#drawing_component", "draw", path, () => {});
+    this.pushEventTo("#drawing_component", "draw", path);
   }
 
   private otherUserDrew(path: Coordinates[]) {
