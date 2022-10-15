@@ -97,10 +97,14 @@ defmodule PhoenixLiveDrawWeb do
 
       import PhoenixLiveDrawWeb.ErrorHelpers
       import PhoenixLiveDrawWeb.Gettext
+
       alias PhoenixLiveDrawWeb.Router.Helpers, as: Routes
+      alias PhoenixLiveDrawWeb.PlayerSession
 
       import PhoenixLiveDrawWeb.LayoutComponent
       import PhoenixLiveDrawWeb.IconComponent
+      import PhoenixLiveDrawWeb.ModalComponent
+      import PhoenixLiveDrawWeb.FormComponent
     end
   end
 

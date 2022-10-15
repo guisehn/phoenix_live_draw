@@ -1,0 +1,27 @@
+<.modal>
+  <:header>
+    <.modal_title>Welcome!</.modal_title>
+  </:header>
+
+  <:content>
+    <.form let={f} for={:player} action={Routes.me_path(@conn, :update)} method="put">
+      <.form_group>
+        <.form_label form={f} field="name">
+          Enter your name to play
+        </.form_label>
+
+        <.form_input
+          form={f}
+          field="name"
+          placeholder="Nickname"
+          autofocus
+          value={PlayerSession.get_player_name(@conn)}
+        />
+
+        <%= hidden_input f, :redirect_to, value: @conn.request_path %>
+      </.form_group>
+
+      <.button class="rounded-lg w-full">Join</.button>
+    </.form>
+  </:content>
+</.modal>

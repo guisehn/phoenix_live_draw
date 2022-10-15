@@ -8,6 +8,7 @@ defmodule PhoenixLiveDrawWeb.Router do
     plug :put_root_layout, {PhoenixLiveDrawWeb.LayoutView, :root}
     plug :protect_from_forgery
     plug :put_secure_browser_headers
+    plug PhoenixLiveDrawWeb.SetPlayerIdPlug
   end
 
   pipeline :api do
@@ -18,6 +19,8 @@ defmodule PhoenixLiveDrawWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
+    resources "/me", MeController, only: [:update], singleton: true
+
     live "/room/:id", RoomLive, :index
   end
 
