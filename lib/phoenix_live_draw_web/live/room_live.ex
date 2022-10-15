@@ -1,7 +1,7 @@
 defmodule PhoenixLiveDrawWeb.RoomLive do
   use PhoenixLiveDrawWeb, :live_view
 
-  alias PhoenixLiveDraw.Game.{Player, Room}
+  alias PhoenixLiveDraw.Game.{Player, Room, PubSub}
 
   alias __MODULE__.{
     MessagesComponent,
@@ -24,6 +24,8 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
       socket
       |> assign(:room, room)
       |> assign(:player_id, "1")
+
+    PubSub.room_subscribe(room_id)
 
     {:ok, socket}
   end
@@ -60,5 +62,17 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
 
   def handle_info({:update_player, player_id}, socket) do
     {:noreply, assign(socket, :player_id, player_id)}
+  end
+
+  def handle_info({:draw, path}, %{assigns: %{room: room, player_id: player_id}} = socket) do
+    guesser? = room.round_player.id != player_id
+
+    if guesser? do
+      # Push a "draw" event that will be consumed by the DrawingCanvas hook
+      # to replicate the draw object for the guessers
+      {:noreply, push_event(socket, :draw, %{path: path})}
+    else
+      {:noreply, socket}
+    end
   end
 end
