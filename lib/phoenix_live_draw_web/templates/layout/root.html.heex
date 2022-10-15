@@ -11,5 +11,9 @@
   </head>
   <body class="bg-indigo-50">
     <%= @inner_content %>
+
+    <%= unless PlayerSession.has_player_name?(@conn) do %>
+      <%= render "set_name_modal.html", conn: @conn %>
+    <% end %>
   </body>
 </html>
