@@ -1,7 +1,9 @@
 defmodule PhoenixLiveDrawWeb.RoomLive do
   use PhoenixLiveDrawWeb, :live_view
 
-  alias PhoenixLiveDraw.Game.{Player, Room, PubSub}
+  alias PhoenixLiveDraw.Game
+  alias PhoenixLiveDraw.Game.{Room, RoomServer}
+  alias PhoenixLiveDrawWeb.PlayerSession
 
   alias __MODULE__.{
     MessagesComponent,
@@ -10,24 +12,37 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
     StageComponent
   }
 
-  def mount(%{"id" => room_id}, _session, socket) do
-    players = %{
-      "1" => Player.new("1", "John"),
-      "2" => Player.new("2", "Mari"),
-      "3" => Player.new("3", "Richard"),
-      "4" => Player.new("4", "Adam")
-    }
+  @impl true
+  def mount(%{"id" => room_id} = _params, session, socket) do
+    if PlayerSession.has_player_name?(session) do
+      mount_joining_game(room_id, session, socket)
+    else
+      mount_dummy_room(room_id, socket)
+    end
+  end
 
-    room = %{Room.new(room_id) | players: players, round_player: players["1"]}
+  defp mount_joining_game(room_id, session, socket) do
+    unless Game.room_exists?(room_id), do: Game.create_room(room_id)
 
-    socket =
-      socket
-      |> assign(:room, room)
-      |> assign(:player_id, "1")
+    room =
+      if connected?(socket) do
+        {:ok, room} = RoomServer.join(room_id, session["player_id"], session["player_name"])
+        room
+      end
 
-    PubSub.room_subscribe(room_id)
+    {:ok, assign(socket, room: room, player_id: session["player_id"])}
+  end
 
-    {:ok, socket}
+  defp mount_dummy_room(room_id, socket) do
+    room = Room.new(room_id)
+    {:ok, assign(socket, room: room, player_id: nil)}
+  end
+
+  @impl true
+  def render(%{room: nil} = assigns) do
+    ~H"""
+    <div>Joining...</div>
+    """
   end
 
   def render(assigns) do
@@ -56,8 +71,10 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
     """
   end
 
-  def handle_info({:update_room, room}, socket) do
-    {:noreply, assign(socket, :room, room)}
+  @impl true
+  def handle_info({:room_updated, updates}, socket) do
+    updated_room = Map.merge(socket.assigns.room, updates)
+    {:noreply, assign(socket, :room, updated_room)}
   end
 
   def handle_info({:update_player, player_id}, socket) do
@@ -65,7 +82,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
   end
 
   def handle_info({:draw, path}, %{assigns: %{room: room, player_id: player_id}} = socket) do
-    guesser? = room.round_player.id != player_id
+    guesser? = room.round_player && room.round_player.id != player_id
 
     if guesser? do
       # Push a "draw" event that will be consumed by the DrawingCanvas hook

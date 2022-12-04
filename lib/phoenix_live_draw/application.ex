@@ -10,12 +10,18 @@ defmodule PhoenixLiveDraw.Application do
     children = [
       # Start the Telemetry supervisor
       PhoenixLiveDrawWeb.Telemetry,
+
       # Start the PubSub system
       {Phoenix.PubSub, name: PhoenixLiveDraw.PubSub},
+
       # Start the Endpoint (http/https)
-      PhoenixLiveDrawWeb.Endpoint
-      # Start a worker by calling: PhoenixLiveDraw.Worker.start_link(arg)
-      # {PhoenixLiveDraw.Worker, arg}
+      PhoenixLiveDrawWeb.Endpoint,
+
+      # Start the player presence tracker
+      PhoenixLiveDraw.Presence,
+
+      # # Start the process that supervises all RoomServer processes
+      PhoenixLiveDraw.Game.RoomSupervisor
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html
