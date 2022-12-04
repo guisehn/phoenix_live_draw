@@ -82,7 +82,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
   end
 
   def handle_info({:draw, path}, %{assigns: %{room: room, player_id: player_id}} = socket) do
-    guesser? = room.round_player.id != player_id
+    guesser? = room.round_player && room.round_player.id != player_id
 
     if guesser? do
       # Push a "draw" event that will be consumed by the DrawingCanvas hook

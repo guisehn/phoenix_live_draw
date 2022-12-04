@@ -21,6 +21,10 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
     room_id |> whereis() |> GenServer.call({:join, player_id, player_name, self()})
   end
 
+  def update(room_id, changes) do
+    room_id |> whereis() |> GenServer.cast({:update_room, changes})
+  end
+
   @doc "Returns the PID for the room ID provided, if it exists"
   @spec whereis(String.t()) :: pid() | :undefined
   def whereis(room_id), do: room_id |> get_process_name() |> :global.whereis_name()
@@ -46,6 +50,13 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
       Presence.track(pid, PubSub.room_players_topic(room.id), player_id, %{name: player_name})
 
     {:reply, {:ok, room}, room}
+  end
+
+  @impl true
+  def handle_cast({:update_room, changes}, room) do
+    updated_room = Map.merge(room, changes)
+    broadcast_changes(room, updated_room)
+    {:noreply, updated_room}
   end
 
   @impl true

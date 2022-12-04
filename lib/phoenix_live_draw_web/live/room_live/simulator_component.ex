@@ -1,7 +1,7 @@
 defmodule PhoenixLiveDrawWeb.RoomLive.SimulatorComponent do
   use PhoenixLiveDrawWeb, :live_component
 
-  alias PhoenixLiveDraw.Game.State
+  alias PhoenixLiveDraw.Game.{RoomServer, State}
 
   def render(assigns) do
     ~H"""
@@ -37,13 +37,13 @@ defmodule PhoenixLiveDrawWeb.RoomLive.SimulatorComponent do
 
   def handle_event("change_state", %{"value" => state}, socket) do
     new_state = generate_state(state)
-    send(self(), {:room_updated, %{state: new_state}})
+    RoomServer.update(socket.assigns.room.id, %{state: new_state})
     {:noreply, socket}
   end
 
   def handle_event("change_round_player", %{"value" => player_id}, socket) do
     player = Map.get(socket.assigns.room.players, player_id)
-    send(self(), {:room_updated, %{round_player: player}})
+    RoomServer.update(socket.assigns.room.id, %{round_player: player})
     {:noreply, socket}
   end
 
