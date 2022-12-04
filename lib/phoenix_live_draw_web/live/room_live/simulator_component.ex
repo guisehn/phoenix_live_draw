@@ -25,9 +25,9 @@ defmodule PhoenixLiveDrawWeb.RoomLive.SimulatorComponent do
       </.button>
 
       <br><br>
-      Current player:<br>
+      Round player:<br>
       <%= for {_, player} <- @room.players do %>
-        <.button phx-click="change_player" value={player.id} phx-target={@myself}>
+        <.button phx-click="change_round_player" value={player.id} phx-target={@myself}>
           <%= player.name %>
         </.button>
       <% end %>
@@ -37,13 +37,13 @@ defmodule PhoenixLiveDrawWeb.RoomLive.SimulatorComponent do
 
   def handle_event("change_state", %{"value" => state}, socket) do
     new_state = generate_state(state)
-    new_room = %{socket.assigns.room | state: new_state}
-    send(self(), {:update_room, new_room})
+    send(self(), {:room_updated, %{state: new_state}})
     {:noreply, socket}
   end
 
-  def handle_event("change_player", %{"value" => player_id}, socket) do
-    send(self(), {:update_player, player_id})
+  def handle_event("change_round_player", %{"value" => player_id}, socket) do
+    player = Map.get(socket.assigns.room.players, player_id)
+    send(self(), {:room_updated, %{round_player: player}})
     {:noreply, socket}
   end
 

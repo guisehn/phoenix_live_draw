@@ -22,7 +22,9 @@ defmodule PhoenixLiveDrawWeb.PlayerSession do
     end
   end
 
-  def get_player_name(conn), do: Conn.get_session(conn, "player_name")
+  def get_player_name(%Conn{} = conn), do: Conn.get_session(conn, "player_name")
 
-  def has_player_name?(conn), do: !!get_player_name(conn)
+  def get_player_name(session) when is_map(session), do: session["player_name"]
+
+  def has_player_name?(session_or_conn), do: !!get_player_name(session_or_conn)
 end
