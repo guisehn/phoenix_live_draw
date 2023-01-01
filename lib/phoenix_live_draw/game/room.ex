@@ -1,5 +1,5 @@
 defmodule PhoenixLiveDraw.Game.Room do
-  alias PhoenixLiveDraw.Game.{Player, State}
+  alias PhoenixLiveDraw.Game.{Player, PlayerMessage, PubSub, State}
 
   defstruct [:id, :players, :round_player, :state]
 
@@ -62,6 +62,8 @@ defmodule PhoenixLiveDraw.Game.Room do
 
   @doc "Returns a map with a diff between two room structs"
   @spec diff(t, t) :: map
+  def diff(room, room), do: %{}
+
   def diff(new_room, old_room) do
     new_room = Map.from_struct(new_room)
     old_room = Map.from_struct(old_room)
@@ -73,5 +75,24 @@ defmodule PhoenixLiveDraw.Game.Room do
         diff
       end
     end)
+  end
+
+  def build_next_round(room) do
+    next_player = next_round_player(room)
+    next_state = State.Drawing.new()
+    %{room | round_player: next_player, state: next_state}
+  end
+
+  def next_round_player(room) do
+    joined_at = if room.round_player, do: room.round_player.joined_at
+    players = room.players |> Map.values() |> Enum.sort_by(& &1.joined_at)
+    next_player = Enum.find(players, &(&1.joined_at > joined_at))
+    next_player || List.first(players)
+  end
+
+  def broadcast_player_message(room, player_id, message) do
+    player = room.players[player_id]
+    message = %PlayerMessage{player_id: player_id, name: player.name, body: message}
+    PubSub.room_broadcast(room.id, {:new_message, message})
   end
 end

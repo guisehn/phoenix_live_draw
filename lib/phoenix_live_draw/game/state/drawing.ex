@@ -12,4 +12,12 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
           # round finishes successfully.
           points_earned: %{Player.id() => non_neg_integer()}
         }
+
+  def new do
+    %__MODULE__{
+      word: "cat",
+      expires_at: DateTime.utc_now() |> DateTime.add(60, :second),
+      points_earned: %{}
+    }
+  end
 end
