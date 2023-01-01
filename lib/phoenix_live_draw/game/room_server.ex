@@ -6,8 +6,10 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
   alias Phoenix.Socket.Broadcast
 
   # Client
-  def start_link(id) do
-    GenServer.start_link(__MODULE__, id, name: get_process_reference(id))
+  def start_link(opts) do
+    GenServer.start_link(__MODULE__, opts[:id],
+      name: opts[:process_reference] || get_process_reference(opts[:id])
+    )
   end
 
   @doc """
@@ -26,14 +28,18 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
   end
 
   @doc "Returns the PID for the room ID provided, if it exists"
-  @spec whereis(String.t()) :: pid() | :undefined
+  @spec whereis(term) :: pid() | :undefined
   def whereis(room_id), do: room_id |> get_process_name() |> :global.whereis_name()
 
   @spec get_process_reference(String.t()) :: {:global, String.t()}
   def get_process_reference(room_id), do: {:global, get_process_name(room_id)}
 
   @spec get_process_name(String.t()) :: String.t()
-  defp get_process_name(room_id), do: "room_" <> room_id
+  defp get_process_name(room_id), do: "#{process_prefix()}_room_" <> room_id
+
+  defp process_prefix, do: Process.get(:room_process_prefix, "global")
+
+  def setup_local_process_prefix, do: Process.put(:room_process_prefix, inspect(self()))
 
   # Server
   @impl true

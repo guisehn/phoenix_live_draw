@@ -20,7 +20,7 @@ defmodule PhoenixLiveDraw.Application do
       # Start the player presence tracker
       PhoenixLiveDraw.Presence,
 
-      # # Start the process that supervises all RoomServer processes
+      # Start the process that supervises all RoomServer processes
       PhoenixLiveDraw.Game.RoomSupervisor
     ]
 
