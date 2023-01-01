@@ -23,6 +23,14 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
     room_id |> whereis() |> GenServer.call({:join, player_id, player_name, self()})
   end
 
+  def send_command(room_id, player_id, command) do
+    room_id |> whereis() |> GenServer.call({:command, player_id, command})
+  end
+
+  def send_message(room_id, player_id, message) do
+    room_id |> whereis() |> GenServer.call({:message, player_id, message})
+  end
+
   def update(room_id, changes) do
     room_id |> whereis() |> GenServer.cast({:update_room, changes})
   end
@@ -45,6 +53,7 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
   @impl true
   def init(id) do
     room = Room.new(id)
+    :timer.send_interval(:timer.seconds(1), :tick)
     PubSub.room_players_subscribe(id)
     {:ok, room}
   end
@@ -58,6 +67,18 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
     {:reply, {:ok, room}, room}
   end
 
+  def handle_call({:message, player_id, text}, _from, room) do
+    {:ok, result, updated_room} = state_module(room).handle_message(room, player_id, text)
+    broadcast_changes(room, updated_room)
+    {:reply, result, updated_room}
+  end
+
+  def handle_call({:command, player_id, command}, _from, room) do
+    {:ok, result, updated_room} = state_module(room).handle_command(room, player_id, command)
+    broadcast_changes(room, updated_room)
+    {:reply, result, updated_room}
+  end
+
   @impl true
   def handle_cast({:update_room, changes}, room) do
     updated_room = Map.merge(room, changes)
@@ -66,6 +87,12 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
   end
 
   @impl true
+  def handle_info(:tick, room) do
+    {:ok, updated_room} = state_module(room).handle_tick(room)
+    broadcast_changes(room, updated_room)
+    {:noreply, updated_room}
+  end
+
   def handle_info(%Broadcast{event: "presence_diff", payload: diff}, room) do
     updated_room = Room.update_players(room, diff)
 
@@ -82,6 +109,13 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
 
   defp broadcast_changes(room, updated_room) do
     updates = Room.diff(updated_room, room)
+    # IO.puts("== broadcast_changes start ==")
+    # IO.inspect(room, label: "OLD ROOM")
+    # IO.inspect(updated_room, label: "UPDATED ROOM")
+    # IO.inspect(updates, label: "UPDATES")
+    # IO.puts("== broadcast_changes end ==")
     if updates != %{}, do: PubSub.room_broadcast(room.id, {:room_updated, updates})
   end
+
+  defp state_module(room), do: room.state.__struct__
 end
