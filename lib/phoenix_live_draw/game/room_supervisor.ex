@@ -4,7 +4,7 @@ defmodule PhoenixLiveDraw.Game.RoomSupervisor do
   alias PhoenixLiveDraw.Game.RoomServer
 
   def start_link(init_arg) do
-    DynamicSupervisor.start_link(__MODULE__, init_arg, name: __MODULE__)
+    DynamicSupervisor.start_link(__MODULE__, init_arg, name: process_ref())
   end
 
   @impl true
@@ -13,6 +13,16 @@ defmodule PhoenixLiveDraw.Game.RoomSupervisor do
   end
 
   def add_room(room_id) do
-    DynamicSupervisor.start_child(__MODULE__, {RoomServer, room_id})
+    opts = [
+      id: room_id,
+      process_reference: RoomServer.get_process_reference(room_id)
+    ]
+
+    DynamicSupervisor.start_child(process_ref(), {RoomServer, opts})
   end
+
+  defp process_ref, do: Process.get(__MODULE__, __MODULE__)
+
+  def setup_local_process_ref,
+    do: Process.put(__MODULE__, :"#{__MODULE__}_#{inspect(self())}")
 end
