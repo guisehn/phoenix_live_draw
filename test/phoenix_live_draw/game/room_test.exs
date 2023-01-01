@@ -138,4 +138,20 @@ defmodule PhoenixLiveDraw.Game.RoomTest do
                       %PlayerMessage{player_id: "player_id", name: "player name", body: "hello"}}
     end
   end
+
+  describe "diff/2" do
+    test "returns empty map when rooms are the same" do
+      room = Room.new("room_id")
+      assert Room.diff(room, room) == %{}
+    end
+
+    test "returns diff between new and old room" do
+      old_room = Room.new("room_id")
+
+      new_players = %{"player_id" => Player.new("foo", "Foo")}
+      new_room = %{old_room | players: new_players}
+
+      assert Room.diff(new_room, old_room) == %{players: new_players}
+    end
+  end
 end
