@@ -66,3 +66,10 @@ if config_env() == :prod do
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 end
+
+config :phoenix_live_draw,
+       PhoenixLiveDraw.Game.Room,
+       # Destroying the room when it becomes empty makes it difficult to test in
+       # dev mode, as live reload will make all players leave and reenter the room,
+       # destroying it.
+       destroy_when_empty?: config_env() == :prod

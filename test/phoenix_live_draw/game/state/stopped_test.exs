@@ -1,6 +1,7 @@
 defmodule PhoenixLiveDraw.Game.State.StoppedTest do
   use ExUnit.Case, async: true
 
+  alias PhoenixLiveDraw.Game.SystemMessage
   alias PhoenixLiveDraw.Game.{Player, PlayerMessage, PubSub, Room, State}
 
   describe "handle_tick/1" do
@@ -54,7 +55,27 @@ defmodule PhoenixLiveDraw.Game.State.StoppedTest do
       assert updated_room.round_player == room.players["player1_id"]
     end
 
-    test "keeps game stopped if there is less than two players" do
+    test "announces game start" do
+      PubSub.room_subscribe("room_id")
+
+      room = %{
+        Room.new("room_id")
+        | state: %State.Stopped{},
+          players: %{
+            "player1_id" => Player.new("player1_id", "player 1"),
+            "player2_id" => Player.new("player2_id", "player 2")
+          }
+      }
+
+      State.Stopped.handle_command(room, "player1_id", :start)
+
+      assert_receive {:new_message,
+                      %SystemMessage{
+                        body: "player 1 is drawing now"
+                      }}
+    end
+
+    test "keeps game stopped when there is less than two players" do
       room = %{
         Room.new("room_id")
         | state: %State.Stopped{},

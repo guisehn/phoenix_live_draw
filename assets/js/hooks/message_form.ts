@@ -24,10 +24,16 @@ class MessageForm extends Hook {
     const { input } = this;
 
     input.addEventListener("blur", () => {
-      input.focus();
+      if (!this.isModalOpen()) {
+        input.focus();
+      }
     });
 
-    input.focus();
+    if (!this.isModalOpen()) input.focus();
+  }
+
+  private isModalOpen() {
+    return Boolean(document.querySelector("[data-modal]"));
   }
 }
 

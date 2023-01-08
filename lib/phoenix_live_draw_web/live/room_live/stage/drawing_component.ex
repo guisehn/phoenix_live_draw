@@ -1,7 +1,7 @@
 defmodule PhoenixLiveDrawWeb.RoomLive.Stage.DrawingComponent do
   use PhoenixLiveDrawWeb, :live_component
 
-  alias PhoenixLiveDraw.Game.{Room, PubSub}
+  alias PhoenixLiveDraw.Game.{Room, RoomServer}
 
   import PhoenixLiveDrawWeb.CountdownComponent
 
@@ -16,12 +16,6 @@ defmodule PhoenixLiveDrawWeb.RoomLive.Stage.DrawingComponent do
       <.bottom_countdown id="drawing_countdown" until={@room.state.expires_at} />
     </main>
     """
-  end
-
-  @impl true
-  def handle_event("draw", drawing_path, socket) do
-    PubSub.room_broadcast(socket.assigns.room.id, {:draw, drawing_path})
-    {:noreply, socket}
   end
 
   defp word_box(assigns) do
@@ -49,4 +43,15 @@ defmodule PhoenixLiveDrawWeb.RoomLive.Stage.DrawingComponent do
 
   defp drawing?(player_id, %Room{round_player: %{id: player_id}}), do: true
   defp drawing?(_, _), do: false
+
+  @impl true
+  def handle_event("draw", drawing_path, socket) do
+    RoomServer.send_command(
+      socket.assigns.room.id,
+      socket.assigns.player_id,
+      {:draw, drawing_path}
+    )
+
+    {:noreply, socket}
+  end
 end

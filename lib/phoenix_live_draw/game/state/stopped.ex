@@ -12,7 +12,11 @@ defmodule PhoenixLiveDraw.Game.State.Stopped do
 
   @impl true
   def handle_command(room, _player_id, :start) do
-    room = if map_size(room.players) > 1, do: Room.build_next_round(room), else: room
+    room =
+      if map_size(room.players) > 1,
+        do: Room.build_next_round(room) |> Room.announce_round_update(),
+        else: room
+
     {:ok, nil, room}
   end
 
