@@ -1,15 +1,27 @@
 import { makeHook, Hook } from "phoenix_typed_hook";
 
 class MessageForm extends Hook {
-  mounted() {
-    const input = this.el.querySelector<HTMLInputElement>("input")!;
+  private input: HTMLInputElement;
 
-    this.el.addEventListener("submit", () => {
+  mounted() {
+    this.input = this.el.querySelector<HTMLInputElement>("input")!;
+    this.clearOnSubmit();
+    this.persistentFocus();
+  }
+
+  private clearOnSubmit() {
+    const { el, input } = this;
+
+    el.addEventListener("submit", () => {
       setTimeout(() => {
         input.value = "";
       }, 1);
       input.focus();
     });
+  }
+
+  private persistentFocus() {
+    const { input } = this;
 
     input.addEventListener("blur", () => {
       input.focus();
