@@ -54,7 +54,7 @@ defmodule PhoenixLiveDraw.Game.State.StoppedTest do
       assert updated_room.round_player == room.players["player1_id"]
     end
 
-    test "keeps game stopped if there is less than two players" do
+    test "keeps game stopped when there is less than two players" do
       room = %{
         Room.new("room_id")
         | state: %State.Stopped{},
