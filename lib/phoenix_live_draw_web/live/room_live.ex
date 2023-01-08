@@ -69,8 +69,6 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
       </div>
     </div>
 
-    <.live_component id="simulator" module={SimulatorComponent} room={@room} player_id={@player_id} />
-
     <div class="mt-10 w-1/2 m-auto text-sm">
       <code><pre><%= inspect(@room, pretty: true) %></pre></code>
     </div>

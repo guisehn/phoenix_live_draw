@@ -1,5 +1,5 @@
 defmodule PhoenixLiveDraw.Game.Room do
-  alias PhoenixLiveDraw.Game.{Player, PlayerMessage, PubSub, State}
+  alias PhoenixLiveDraw.Game.{Player, PlayerMessage, PubSub, State, SystemMessage}
 
   defstruct [:id, :players, :round_player, :state]
 
@@ -83,6 +83,13 @@ defmodule PhoenixLiveDraw.Game.Room do
     %{room | round_player: next_player, state: next_state}
   end
 
+  def announce_round_update(%__MODULE__{state: %State.Drawing{}, round_player: player} = room) do
+    broadcast_system_message(room, "#{player.name} is drawing now")
+    room
+  end
+
+  def announce_round_update(room), do: room
+
   def next_round_player(room) do
     joined_at = if room.round_player, do: room.round_player.joined_at
     players = room.players |> Map.values() |> Enum.sort_by(& &1.joined_at)
@@ -93,6 +100,11 @@ defmodule PhoenixLiveDraw.Game.Room do
   def broadcast_player_message(room, player_id, message) do
     player = room.players[player_id]
     message = PlayerMessage.new(player_id: player_id, name: player.name, body: message)
+    PubSub.room_broadcast(room.id, {:new_message, message})
+  end
+
+  def broadcast_system_message(room, message) do
+    message = SystemMessage.new(body: message)
     PubSub.room_broadcast(room.id, {:new_message, message})
   end
 end
