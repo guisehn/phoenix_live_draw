@@ -39,6 +39,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive.MessagesComponent do
         name="msg"
         class="rounded border border-gray-200 w-full rounded-3xl bg-gray-100 border-0 text-sm"
         placeholder="Guess and chat here..."
+        autocomplete="off"
       />
     </form>
     """
