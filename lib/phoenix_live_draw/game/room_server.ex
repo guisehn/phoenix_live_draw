@@ -98,11 +98,15 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
 
     result =
       case map_size(updated_room.players) do
+        0 -> {:stop, :normal, updated_room}
         1 -> {:noreply, Room.stop_game(updated_room)}
         _ -> {:noreply, updated_room}
       end
 
-    broadcast_changes(room, updated_room)
+    case result do
+      {:noreply, updated_room} -> broadcast_changes(room, updated_room)
+      _ -> nil
+    end
 
     result
   end
