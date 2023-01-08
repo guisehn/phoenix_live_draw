@@ -29,8 +29,7 @@ defmodule PhoenixLiveDraw.Game.State.DrawingTest do
 
       {:ok, room} = State.Drawing.handle_tick(room)
 
-      assert room.state.__struct__ == State.PostRound
-      assert %{outcome: :no_hits, word_was: "cat"} = room.state
+      assert %State.PostRound{outcome: :no_hits, word_was: "cat"} = room.state
       assert room.players["player1_id"].points == 0
       assert room.players["player2_id"].points == 0
       assert room.players["player3_id"].points == 0
@@ -46,8 +45,7 @@ defmodule PhoenixLiveDraw.Game.State.DrawingTest do
 
       {:ok, room} = State.Drawing.handle_tick(room)
 
-      assert room.state.__struct__ == State.PostRound
-      assert %{outcome: :some_hits, word_was: "cat"} = room.state
+      assert %State.PostRound{outcome: :some_hits, word_was: "cat"} = room.state
       assert room.players["player1_id"].points == 12
       assert room.players["player2_id"].points == 10
       assert room.players["player3_id"].points == 9
@@ -179,8 +177,7 @@ defmodule PhoenixLiveDraw.Game.State.DrawingTest do
       assert {:ok, :correct, room} = State.Drawing.handle_message(room, "player3_id", "cat")
       assert {:ok, :correct, room} = State.Drawing.handle_message(room, "player4_id", "cat")
 
-      assert room.state.__struct__ == State.PostRound
-      assert %{outcome: :all_hit, word_was: "cat"} = room.state
+      assert %State.PostRound{outcome: :all_hit, word_was: "cat"} = room.state
       assert room.players["player1_id"].points == 10 + 2 + 2
       assert room.players["player2_id"].points == 9
       assert room.players["player3_id"].points == 8
