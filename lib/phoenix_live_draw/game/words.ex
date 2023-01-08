@@ -19,7 +19,7 @@ defmodule PhoenixLiveDraw.Game.Words do
   # Server
   @impl true
   def init(_) do
-    :ets.new(__MODULE__, [:set, :protected, :named_table])
+    :ets.new(__MODULE__, [:set, :protected, :named_table, read_concurrency: true])
     send(self(), :load_words)
     {:ok, nil}
   end
