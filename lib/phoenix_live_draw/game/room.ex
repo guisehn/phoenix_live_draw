@@ -1,5 +1,5 @@
 defmodule PhoenixLiveDraw.Game.Room do
-  alias PhoenixLiveDraw.Game.{Player, PlayerMessage, PubSub, State, SystemMessage}
+  alias PhoenixLiveDraw.Game.{Player, PlayerMessage, PubSub, State, SystemMessage, Words}
 
   defstruct [:id, :players, :round_player, :state, :destroy_when_empty?]
 
@@ -88,7 +88,8 @@ defmodule PhoenixLiveDraw.Game.Room do
   @doc "Builds the next round of the game"
   def build_next_round(room) do
     next_player = next_round_player(room)
-    next_state = State.Drawing.new()
+    next_word = Words.sample()
+    next_state = State.Drawing.new(next_word)
     %{room | round_player: next_player, state: next_state}
   end
 
