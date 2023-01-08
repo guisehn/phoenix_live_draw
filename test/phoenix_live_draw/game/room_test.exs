@@ -10,7 +10,8 @@ defmodule PhoenixLiveDraw.Game.RoomTest do
              id: "cb594c62",
              players: %{},
              state: %State.Stopped{},
-             round_player: nil
+             round_player: nil,
+             destroy_when_empty?: false
            }
   end
 

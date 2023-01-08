@@ -21,7 +21,10 @@ defmodule PhoenixLiveDraw.Application do
       PhoenixLiveDraw.Presence,
 
       # Start the process that supervises all RoomServer processes
-      PhoenixLiveDraw.Game.RoomSupervisor
+      PhoenixLiveDraw.Game.RoomSupervisor,
+
+      # Start the words server
+      PhoenixLiveDraw.Game.Words
     ]
 
     # See https://hexdocs.pm/elixir/Supervisor.html

@@ -13,9 +13,9 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
           points_earned: %{Player.id() => non_neg_integer()}
         }
 
-  def new do
+  def new(word) do
     %__MODULE__{
-      word: "cat",
+      word: word,
       expires_at: DateTime.utc_now() |> DateTime.add(60, :second),
       points_earned: %{}
     }

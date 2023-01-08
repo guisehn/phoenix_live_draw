@@ -13,7 +13,7 @@ defmodule PhoenixLiveDraw.Game.State.DrawingTest do
       "player4_id" => Player.new("player3_id", "player 4")
     }
 
-    state = %{State.Drawing.new() | word: "cat"} |> Map.merge(state_data)
+    state = State.Drawing.new("cat") |> Map.merge(state_data)
 
     %{room | state: state, players: players, round_player: players["player1_id"]}
   end
