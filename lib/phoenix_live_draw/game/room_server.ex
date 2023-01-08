@@ -109,11 +109,7 @@ defmodule PhoenixLiveDraw.Game.RoomServer do
 
   defp broadcast_changes(room, updated_room) do
     updates = Room.diff(updated_room, room)
-
-    if updates != %{} do
-      IO.inspect(updates, label: "room changed")
-      PubSub.room_broadcast(room.id, {:room_updated, updates})
-    end
+    if updates != %{}, do: PubSub.room_broadcast(room.id, {:room_updated, updates})
   end
 
   defp state_module(room), do: room.state.__struct__
