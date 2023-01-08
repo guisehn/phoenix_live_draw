@@ -3,7 +3,7 @@ defmodule PhoenixLiveDrawWeb.ModalComponent do
 
   def modal(assigns) do
     ~H"""
-    <div class="bg-gray-500/40 backdrop-blur-sm w-full h-full fixed top-0 left-0">
+    <div data-modal class="bg-gray-500/40 backdrop-blur-sm w-full h-full fixed top-0 left-0">
       <div class="flex min-h-full items-end justify-center text-center items-center">
         <div class="rounded-lg bg-white text-left shadow-xl relative w-full max-w-sm p-8">
           <div class="mb-4">
