@@ -1,5 +1,5 @@
 defmodule PhoenixLiveDraw.Game.State.Drawing do
-  alias PhoenixLiveDraw.Game.Player
+  alias PhoenixLiveDraw.Game.{Player, Room}
 
   defstruct [:word, :points_earned, :expires_at]
 
@@ -19,5 +19,19 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
       expires_at: DateTime.utc_now() |> DateTime.add(60, :second),
       points_earned: %{}
     }
+  end
+
+  @behaviour PhoenixLiveDraw.Game.State
+
+  @impl true
+  def handle_tick(room), do: {:ok, room}
+
+  @impl true
+  def handle_command(room, _, _), do: {:ok, nil, room}
+
+  @impl true
+  def handle_message(room, player_id, message) do
+    Room.broadcast_player_message(room, player_id, message)
+    {:ok, nil, room}
   end
 end

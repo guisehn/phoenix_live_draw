@@ -92,7 +92,7 @@ defmodule PhoenixLiveDraw.Game.Room do
 
   def broadcast_player_message(room, player_id, message) do
     player = room.players[player_id]
-    message = %PlayerMessage{player_id: player_id, name: player.name, body: message}
+    message = PlayerMessage.new(player_id: player_id, name: player.name, body: message)
     PubSub.room_broadcast(room.id, {:new_message, message})
   end
 end
