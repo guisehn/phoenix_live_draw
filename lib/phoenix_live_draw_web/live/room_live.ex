@@ -8,7 +8,6 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
   alias __MODULE__.{
     MessagesComponent,
     PlayersComponent,
-    SimulatorComponent,
     StageComponent
   }
 
