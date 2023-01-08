@@ -30,12 +30,12 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
         room
       end
 
-    {:ok, assign(socket, room: room, player_id: session["player_id"])}
+    {:ok, assign(socket, room: room, player_id: session["player_id"], messages: [])}
   end
 
   defp mount_dummy_room(room_id, socket) do
     room = Room.new(room_id)
-    {:ok, assign(socket, room: room, player_id: nil)}
+    {:ok, assign(socket, room: room, player_id: nil, messages: [])}
   end
 
   @impl true
@@ -54,7 +54,13 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
         </div>
 
         <div class="h-[170px] bg-white rounded shadow-md shrink-0 rounded-bl-3xl">
-          <MessagesComponent.render room={@room} player_id={@player_id} />
+          <.live_component
+            id="messages"
+            module={MessagesComponent}
+            room={@room}
+            player_id={@player_id}
+            messages={@messages}
+          />
         </div>
       </div>
 
@@ -79,6 +85,10 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
 
   def handle_info({:update_player, player_id}, socket) do
     {:noreply, assign(socket, :player_id, player_id)}
+  end
+
+  def handle_info({:new_message, message}, socket) do
+    {:noreply, assign(socket, :messages, [message])}
   end
 
   def handle_info({:draw, path}, %{assigns: %{room: room, player_id: player_id}} = socket) do

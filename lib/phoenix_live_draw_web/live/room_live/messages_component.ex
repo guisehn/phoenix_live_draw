@@ -1,29 +1,25 @@
 defmodule PhoenixLiveDrawWeb.RoomLive.MessagesComponent do
-  alias PhoenixLiveDraw.Game.{PlayerMessage, SystemMessage}
+  alias PhoenixLiveDraw.Game.{PlayerMessage, RoomServer, SystemMessage}
 
-  use PhoenixLiveDrawWeb, :component
+  use PhoenixLiveDrawWeb, :live_component
 
+  @impl true
   def render(assigns) do
-    messages = [
-      %PlayerMessage{name: "Mari", body: "hi"},
-      %SystemMessage{body: "John is drawing now"},
-      %PlayerMessage{name: "Adam", body: "cat"},
-      %PlayerMessage{name: "Richard", body: "dog"},
-      %PlayerMessage{name: "Mari", body: "pet"},
-      %PlayerMessage{name: "Richard", body: "bark"},
-      %PlayerMessage{name: "Adam", body: "animal"}
-    ]
-
     ~H"""
     <div class="h-full flex-col gap-y-0.5 p-2 pb-4">
-      <ul class="overflow-auto h-4/5 text-sm p-4">
-        <%= for message <- messages do %>
-          <li><.message message={message} /></li>
+      <ul
+        id="messages-list"
+        phx-update="append"
+        class="overflow-auto h-4/5 text-sm p-4"
+        phx-hook="MessageList"
+      >
+        <%= for message <- @messages do %>
+          <li id={"message-#{message.id}"}><.message message={message} /></li>
         <% end %>
       </ul>
 
       <%= unless my_round?(assigns) do %>
-        <.message_form />
+        <.message_form {assigns} />
       <% end %>
     </div>
     """
@@ -34,12 +30,16 @@ defmodule PhoenixLiveDrawWeb.RoomLive.MessagesComponent do
     <form
       id="message_form"
       class="h-1/5"
+      phx-submit="send"
+      phx-target={@myself}
+      phx-hook="MessageForm"
     >
       <input
         type="text"
         name="msg"
         class="rounded border border-gray-200 w-full rounded-3xl bg-gray-100 border-0 text-sm"
         placeholder="Guess and chat here..."
+        autocomplete="off"
       />
     </form>
     """
@@ -59,5 +59,16 @@ defmodule PhoenixLiveDrawWeb.RoomLive.MessagesComponent do
 
   defp my_round?(%{room: room, player_id: player_id}) do
     room.round_player && room.round_player.id == player_id
+  end
+
+  @impl true
+  def handle_event("send", %{"msg" => msg}, socket) do
+    msg = String.trim(msg)
+
+    if msg != "" do
+      RoomServer.send_message(socket.assigns.room.id, socket.assigns.player_id, msg)
+    end
+
+    {:noreply, socket}
   end
 end
