@@ -1,12 +1,13 @@
 defmodule PhoenixLiveDraw.Game.Room do
   alias PhoenixLiveDraw.Game.{Player, PlayerMessage, PubSub, State, SystemMessage}
 
-  defstruct [:id, :players, :round_player, :state]
+  defstruct [:id, :players, :round_player, :state, :destroy_when_empty?]
 
   @type t :: %__MODULE__{
           id: id(),
           players: %{Player.id() => Player.t()},
           state: state(),
+          destroy_when_empty?: boolean(),
 
           # Who is drawing now
           round_player: Player.t() | nil
@@ -22,9 +23,13 @@ defmodule PhoenixLiveDraw.Game.Room do
       id: id,
       players: %{},
       state: %State.Stopped{},
-      round_player: nil
+      round_player: nil,
+      destroy_when_empty?: get_config(:destroy_when_empty?)
     }
   end
+
+  defp get_config(key),
+    do: Application.fetch_env!(:phoenix_live_draw, __MODULE__) |> Keyword.get(key)
 
   @doc "Stops the game, resetting the room state"
   @spec stop_game(t) :: t
