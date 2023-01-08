@@ -74,7 +74,7 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
     {:ok, reply, room}
   end
 
-  # No guess
+  # No hit
   def handle_message(room, player_id, msg) do
     Room.broadcast_player_message(room, player_id, msg)
     {:ok, nil, room}
@@ -111,6 +111,7 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
     room
     |> persist_points()
     |> Map.put(:state, generate_post_round(room))
+    |> tap(&announce_outcome/1)
   end
 
   defp persist_points(room) do
@@ -131,7 +132,7 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
       cond do
         all_hit?(room) -> :all_hit
         some_hit?(room) -> :some_hits
-        true -> :no_guesses
+        true -> :no_hits
       end
 
     State.PostRound.new(outcome: outcome, word_was: room.state.word)
@@ -140,4 +141,17 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
   defp all_hit?(room), do: map_size(room.state.points_earned) == map_size(room.players)
 
   defp some_hit?(room), do: map_size(room.state.points_earned) > 0
+
+  defp announce_outcome(
+         %Room{state: %State.PostRound{outcome: outcome, word_was: word_was}} = room
+       ) do
+    message =
+      case outcome do
+        :all_hit -> "Everybody hit the answer! The word was: #{word_was}"
+        :some_hits -> "Some people hit the answer! The word was: #{word_was}"
+        :no_hits -> "Nobody hit the answer"
+      end
+
+    Room.broadcast_system_message(room, message)
+  end
 end
