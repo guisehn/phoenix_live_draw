@@ -1,3 +1,3 @@
 defmodule PhoenixLiveDraw.Game.SystemMessage do
-  defstruct [:body]
+  defstruct [:id, :body]
 end
