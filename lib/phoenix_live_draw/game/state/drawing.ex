@@ -1,5 +1,5 @@
 defmodule PhoenixLiveDraw.Game.State.Drawing do
-  alias PhoenixLiveDraw.Game.{Player, PubSub, Room, State}
+  alias PhoenixLiveDraw.Game.{Player, Room, State}
 
   defstruct [:word, :points_earned, :expires_at]
 
@@ -35,7 +35,7 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
   @impl true
   def handle_command(room, player_id, {:draw, drawing_path}) do
     if player_id == room.round_player.id do
-      PubSub.room_broadcast(room.id, {:draw, drawing_path})
+      Room.draw(room, drawing_path)
     end
 
     {:ok, nil, room}

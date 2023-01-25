@@ -1,13 +1,16 @@
 defmodule PhoenixLiveDraw.Game.Room do
   alias PhoenixLiveDraw.Game.{Player, PlayerMessage, PubSub, State, SystemMessage, Words}
 
-  defstruct [:id, :players, :round_player, :state, :destroy_when_empty?]
+  defstruct [:id, :players, :round_player, :state, :destroy_when_empty?, :drawing_ets]
 
   @type t :: %__MODULE__{
           id: id(),
           players: %{Player.id() => Player.t()},
           state: state(),
           destroy_when_empty?: boolean(),
+
+          # ID of an ETS table used to store the current drawing of the room
+          drawing_ets: :ets.tid(),
 
           # Who is drawing now
           round_player: Player.t() | nil
@@ -24,7 +27,8 @@ defmodule PhoenixLiveDraw.Game.Room do
       players: %{},
       state: %State.Stopped{},
       round_player: nil,
-      destroy_when_empty?: get_config(:destroy_when_empty?)
+      destroy_when_empty?: get_config(:destroy_when_empty?),
+      drawing_ets: :ets.new(:drawing, [:bag, :protected])
     }
   end
 
@@ -90,6 +94,7 @@ defmodule PhoenixLiveDraw.Game.Room do
     next_player = next_round_player(room)
     next_word = Words.sample()
     next_state = State.Drawing.new(next_word)
+    clear_drawing(room)
     %{room | round_player: next_player, state: next_state}
   end
 
@@ -120,5 +125,19 @@ defmodule PhoenixLiveDraw.Game.Room do
   def broadcast_system_message(room, message) do
     message = SystemMessage.new(body: message)
     PubSub.room_broadcast(room.id, {:new_message, message})
+  end
+
+  def clear_drawing(room) do
+    :ets.delete(room.drawing_ets, :drawing)
+  end
+
+  def draw(room, drawing_path) do
+    :ets.insert(room.drawing_ets, {:drawing, drawing_path})
+    PubSub.room_broadcast(room.id, {:draw, drawing_path})
+  end
+
+  def get_drawing(room) do
+    :ets.lookup(room.drawing_ets, :drawing)
+    |> Enum.map(fn {:drawing, drawing_path} -> drawing_path end)
   end
 end
