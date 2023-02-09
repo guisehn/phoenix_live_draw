@@ -121,6 +121,20 @@ defmodule PhoenixLiveDraw.Game.RoomTest do
       assert room.round_player == players["foo"]
       assert %State.Drawing{} = room.state
     end
+
+    test "clears drawing" do
+      players = %{
+        "foo" => Player.new("foo", "foo"),
+        "bar" => Player.new("bar", "bar")
+      }
+
+      room = %{Room.new("room_id") | players: players} |> Room.build_next_round()
+
+      Room.draw(room, [%{x: 5, y: 5}])
+      Room.build_next_round(room)
+
+      assert Room.get_drawing(room) == []
+    end
   end
 
   describe "broadcast_player_message/3" do
