@@ -131,6 +131,16 @@ defmodule PhoenixLiveDraw.Game.State.DrawingTest do
       assert_receive {:new_message, %SystemMessage{body: "player 2 hit the answer"}}
     end
 
+    test "checks answer as case insensitive" do
+      room = room_in_drawing_state()
+
+      PubSub.room_subscribe("room_id")
+
+      assert {:ok, :correct, _room} = State.Drawing.handle_message(room, "player2_id", "CAT")
+
+      assert_receive {:new_message, %SystemMessage{body: "player 2 hit the answer"}}
+    end
+
     test "gives point to drawer and guesser (first hit)" do
       room = room_in_drawing_state()
 

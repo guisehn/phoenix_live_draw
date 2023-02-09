@@ -51,13 +51,20 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
 
   # Player hit the word
   def handle_message(
-        %Room{state: %State.Drawing{word: word, points_earned: points_earned}} = room,
+        %Room{state: %State.Drawing{word: word}} = room,
         player_id,
         msg
-      )
-      when msg == word do
+      ) do
+    if String.downcase(msg) == word do
+      message_hit(room, player_id)
+    else
+      message_no_hit(room, player_id, msg)
+    end
+  end
+
+  defp message_hit(room, player_id) do
     {reply, room} =
-      if Map.has_key?(points_earned, player_id) do
+      if Map.has_key?(room.state.points_earned, player_id) do
         {nil, room}
       else
         player = room.players[player_id]
@@ -74,8 +81,7 @@ defmodule PhoenixLiveDraw.Game.State.Drawing do
     {:ok, reply, room}
   end
 
-  # No hit
-  def handle_message(room, player_id, msg) do
+  defp message_no_hit(room, player_id, msg) do
     Room.broadcast_player_message(room, player_id, msg)
     {:ok, nil, room}
   end
