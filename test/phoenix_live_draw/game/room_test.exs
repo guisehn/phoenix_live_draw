@@ -6,13 +6,13 @@ defmodule PhoenixLiveDraw.Game.RoomTest do
   test "new/1" do
     room = Room.new("cb594c62")
 
-    assert room == %Room{
+    assert %Room{
              id: "cb594c62",
              players: %{},
              state: %State.Stopped{},
              round_player: nil,
              destroy_when_empty?: false
-           }
+           } = room
   end
 
   describe "stop_game/1" do
