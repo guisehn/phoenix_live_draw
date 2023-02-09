@@ -145,7 +145,7 @@ defmodule PhoenixLiveDraw.Game.Room do
   end
 
   @doc "Get the current drawing of the room"
-  @spec get_drawing(t) :: drawing_path
+  @spec get_drawing(t) :: [drawing_path]
   def get_drawing(room) do
     :ets.lookup(room.drawing_ets, :drawing)
     |> Enum.map(fn {:drawing, drawing_path} -> drawing_path end)
