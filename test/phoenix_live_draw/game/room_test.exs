@@ -155,4 +155,41 @@ defmodule PhoenixLiveDraw.Game.RoomTest do
       assert Room.diff(new_room, old_room) == %{players: new_players}
     end
   end
+
+  describe "draw/1" do
+    test "broadcasts drawing" do
+      room = Room.new("room_id")
+
+      PubSub.room_subscribe("room_id")
+
+      Room.draw(room, [%{x: 3, y: 2}, %{x: 4, y: 1}])
+
+      assert_receive {:draw, [%{x: 3, y: 2}, %{x: 4, y: 1}]}
+    end
+  end
+
+  describe "get_drawing/1" do
+    test "gets current drawing" do
+      room = Room.new("room_id")
+
+      Room.draw(room, [%{x: 3, y: 2}, %{x: 4, y: 1}])
+      Room.draw(room, [%{x: 6, y: 4}])
+
+      drawing = Room.get_drawing(room)
+      assert drawing == [[%{x: 3, y: 2}, %{x: 4, y: 1}], [%{x: 6, y: 4}]]
+    end
+  end
+
+  describe "clear_drawing/1" do
+    test "clears drawing" do
+      room = Room.new("room_id")
+
+      Room.draw(room, [%{x: 3, y: 2}, %{x: 4, y: 1}])
+      Room.draw(room, [%{x: 6, y: 4}])
+      Room.clear_drawing(room)
+
+      drawing = Room.get_drawing(room)
+      assert drawing == []
+    end
+  end
 end
