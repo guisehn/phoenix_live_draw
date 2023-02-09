@@ -2,7 +2,7 @@ import DrawingEngine, { Mode } from "../drawing_engine/drawing_engine";
 import { Coordinates } from "../drawing_engine/types";
 import { makeHook, Hook } from "phoenix_typed_hook";
 
-type DrawEventData = { path: Coordinates[] };
+type DrawEventData = { paths: [Coordinates[]] };
 
 class DrawingCanvas extends Hook {
   private mode: Mode;
@@ -25,9 +25,9 @@ class DrawingCanvas extends Hook {
 
     this.engine.setup();
 
-    this.handleEvent("draw", ({ path }: DrawEventData) =>
-      this.otherUserDrew(path)
-    );
+    this.handleEvent("draw", ({ paths }: DrawEventData) => {
+      this.otherUserDrew(paths);
+    });
   }
 
   private createCanvas({ zIndex }: { zIndex: number }) {
@@ -46,9 +46,11 @@ class DrawingCanvas extends Hook {
     this.pushEventTo("#drawing_component", "draw", path);
   }
 
-  private otherUserDrew(path: Coordinates[]) {
+  private otherUserDrew(paths: [Coordinates[]]) {
     console.log("other user drew");
-    this.engine.draw(path);
+    for (const path of paths) {
+      this.engine.draw(path);
+    }
   }
 }
 

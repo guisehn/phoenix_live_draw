@@ -2,7 +2,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
   use PhoenixLiveDrawWeb, :live_view
 
   alias PhoenixLiveDraw.Game
-  alias PhoenixLiveDraw.Game.{Room, RoomServer}
+  alias PhoenixLiveDraw.Game.{Room, RoomServer, State}
   alias PhoenixLiveDrawWeb.PlayerSession
 
   alias __MODULE__.{
@@ -29,8 +29,18 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
         room
       end
 
-    {:ok, assign(socket, room: room, player_id: session["player_id"], messages: [])}
+    {:ok,
+     socket
+     |> assign(room: room, player_id: session["player_id"], messages: [])
+     |> push_current_drawing(room)}
   end
+
+  defp push_current_drawing(socket, %Room{state: %State.Drawing{}} = room) do
+    current_drawing = Room.get_drawing(room)
+    push_event(socket, :draw, %{paths: current_drawing})
+  end
+
+  defp push_current_drawing(socket, _room), do: socket
 
   defp mount_dummy_room(room_id, socket) do
     room = Room.new(room_id)
@@ -94,7 +104,7 @@ defmodule PhoenixLiveDrawWeb.RoomLive do
     if guesser? do
       # Push a "draw" event that will be consumed by the DrawingCanvas hook
       # to replicate the draw object for the guessers
-      {:noreply, push_event(socket, :draw, %{path: path})}
+      {:noreply, push_event(socket, :draw, %{paths: [path]})}
     else
       {:noreply, socket}
     end
