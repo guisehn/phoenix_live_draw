@@ -170,7 +170,7 @@ defmodule PhoenixLiveDraw.Game.RoomTest do
     end
   end
 
-  describe "draw/1" do
+  describe "draw/2" do
     test "broadcasts drawing" do
       room = Room.new("room_id")
 
