@@ -20,6 +20,8 @@ defmodule PhoenixLiveDraw.Game.Room do
 
   @type state :: State.Stopped.t() | State.Drawing.t() | State.PostRound.t()
 
+  @type drawing_path :: [%{x: non_neg_integer(), y: non_neg_integer()}]
+
   @spec new(id) :: t
   def new(id) do
     %__MODULE__{
@@ -127,15 +129,23 @@ defmodule PhoenixLiveDraw.Game.Room do
     PubSub.room_broadcast(room.id, {:new_message, message})
   end
 
-  def clear_drawing(room) do
-    :ets.delete(room.drawing_ets, :drawing)
-  end
-
+  @doc "Draw something on the room"
+  @spec draw(t, drawing_path) :: :ok
   def draw(room, drawing_path) do
     :ets.insert(room.drawing_ets, {:drawing, drawing_path})
     PubSub.room_broadcast(room.id, {:draw, drawing_path})
+    :ok
   end
 
+  @doc "Clear the current drawing of the room"
+  @spec clear_drawing(t) :: :ok
+  def clear_drawing(room) do
+    :ets.delete(room.drawing_ets, :drawing)
+    :ok
+  end
+
+  @doc "Get the current drawing of the room"
+  @spec get_drawing(t) :: drawing_path
   def get_drawing(room) do
     :ets.lookup(room.drawing_ets, :drawing)
     |> Enum.map(fn {:drawing, drawing_path} -> drawing_path end)
